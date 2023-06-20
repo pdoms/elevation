@@ -15,6 +15,10 @@ export class Position {
         })
     }
 
+    update(coords) {
+
+    }
+
     toArray(): [number, number] | undefined {
         if (this.coords != null) {
             return Object(this.coords)
