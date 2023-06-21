@@ -5,6 +5,14 @@ import {MapContainer, Marker, TileLayer, useMapEvents, useMap} from "react-leafl
 import {_to_array} from "./helper";
 import {Icon} from "leaflet";
 import icn from "../assets/location-pin.png"
+import {makeFetch} from "./controller";
+
+
+interface IRenderMap {
+    coords: Coordinates | undefined
+    getElevation: (elev: number | null)=>void
+    getError: (err: string)=>void
+}
 
 export const PinMarker = new Icon({
     iconUrl: icn,
@@ -18,7 +26,7 @@ interface ISetViewOnClick {
 /* This Component renders the map, loaded from openstreetmap.org. It further 
  * handles clicks on the map.
  * */
-export const RenderMap = () => {
+export const RenderMap: FC<IRenderMap> = ({coords, getElevation, getError}) => {
     const [currentPosition, setCurrentPosition] = useState<LatLngTuple>([48.0, 15.0])
 
     useEffect(() => {
@@ -54,12 +62,21 @@ export const RenderMap = () => {
     
     //click handler, to set the marker a new on click, and trigger further api calls
     const LocationFinder = (): null => {
-        const map = useMapEvents({
+        useMapEvents({
             click: (e: LeafletMouseEvent) => {
-                console.log(e)
                 let latlng: LatLngTuple = [e.latlng.lat, e.latlng.lng]
                 setCurrentPosition(latlng)
-
+                //Error handling is soft, no errors are really thrown but are
+                //rather lifted to the highest possible component, to inform the user
+                makeFetch(latlng[0], latlng[1]).then((r: number | null) => {
+                    if (r === null) {
+                        getError("Unable to fetch data")
+                    } else {
+                        getElevation(r)
+                    }
+                }).catch((err) => {
+                    getError(err)
+                })
             },
         });
         return null;
