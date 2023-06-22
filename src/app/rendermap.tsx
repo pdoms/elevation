@@ -2,7 +2,7 @@ import {LatLng, LatLngTuple, LeafletMouseEvent} from "leaflet";
 import "leaflet/dist/leaflet.css";
 import {SetStateAction, useEffect, useRef, useState, FC} from "react";
 import {MapContainer, Marker, TileLayer, useMapEvents, useMap} from "react-leaflet"
-import {_to_array} from "./helper";
+import {CoordinatesFactory, _to_array} from "./helper";
 import {Icon} from "leaflet";
 import icn from "../assets/location-pin.png"
 import {makeFetch} from "./controller";
@@ -10,7 +10,8 @@ import {makeFetch} from "./controller";
 
 interface IRenderMap {
     coords: Coordinates | undefined
-    getElevation: (elev: number | null)=>void
+    getCoords: (coords: Coordinates) => void
+    getElevation: (elev: number | null)=> void
     getError: (err: string)=>void
 }
 
@@ -26,8 +27,8 @@ interface ISetViewOnClick {
 /* This Component renders the map, loaded from openstreetmap.org. It further 
  * handles clicks on the map.
  * */
-export const RenderMap: FC<IRenderMap> = ({coords, getElevation, getError}) => {
-    const [currentPosition, setCurrentPosition] = useState<LatLngTuple>([48.0, 15.0])
+export const RenderMap: FC<IRenderMap> = ({coords, getElevation, getError, getCoords}) => {
+    const [currentPosition, setCurrentPosition] = useState<LatLngTuple>([48.210033, 16.363449])
 
     useEffect(() => {
         // get user location via navigator -> this works best with gps connected devices
@@ -38,11 +39,9 @@ export const RenderMap: FC<IRenderMap> = ({coords, getElevation, getError}) => {
 
     const onSuccess = (pos: GeolocationPosition): void => {
         let {longitude, latitude} = pos.coords;
-        setCurrentPosition({
-            lat: latitude,
-            long: longitude,
-            toArray: _to_array
-        }.toArray())
+        let c = CoordinatesFactory(latitude, longitude)
+        setCurrentPosition(c.toArray())
+        getCoords(c)
 
     }
 
@@ -51,6 +50,7 @@ export const RenderMap: FC<IRenderMap> = ({coords, getElevation, getError}) => {
         console.error(err)
         //set to vienna for now, this could also be provided via env var
         setCurrentPosition([48.210033, 16.363449])
+        getCoords(CoordinatesFactory(48.210033, 16.363449))
     }
 
     //centers the view of the map when map is clicked
@@ -66,6 +66,8 @@ export const RenderMap: FC<IRenderMap> = ({coords, getElevation, getError}) => {
             click: (e: LeafletMouseEvent) => {
                 let latlng: LatLngTuple = [e.latlng.lat, e.latlng.lng]
                 setCurrentPosition(latlng)
+                getCoords(CoordinatesFactory(latlng[0], latlng[1]))
+            
                 //Error handling is soft, no errors are really thrown but are
                 //rather lifted to the highest possible component, to inform the user
                 makeFetch(latlng[0], latlng[1]).then((r: number | null) => {
@@ -81,6 +83,12 @@ export const RenderMap: FC<IRenderMap> = ({coords, getElevation, getError}) => {
         });
         return null;
     };
+
+    useEffect(() => {
+        if (coords) {
+        setCurrentPosition(coords.toArray())
+      }
+    }, [coords]) 
 
     return (
         <>
