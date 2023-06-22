@@ -1,7 +1,8 @@
 
 //since opentopodata.org provides differnt datasets, the dataset could either
 //be user defined or configurable, if further features should be considered
-const BASEURL = "https://api.opentopodata.org/v1/aster30m?locations="
+//const BASEURL = "https://api.opentopodata.org/v1/aster30m?locations="
+const BASEURL = "http://localhost:5000" 
 
 /**
  * Function that calls the opentopodata dataset with the location params and returns
@@ -12,7 +13,12 @@ const BASEURL = "https://api.opentopodata.org/v1/aster30m?locations="
  * **/
 export async function makeFetch(lat: number, long: number): Promise<number | null> {
     let url = urlBuilder(lat, long)
-    let response = await fetch(url)
+    let response = await fetch(url, {
+        "headers": {
+            "Accept": "application/json",
+            "Referrer-Policy": "no-referrer"
+        }
+    })
     let data;
     let code = response.status
     if (response.ok) {
@@ -37,5 +43,6 @@ export async function makeFetch(lat: number, long: number): Promise<number | nul
  * @returns {string} constructred url for fetch
  * **/
 export function urlBuilder(lat: number, long: number): string {
-    return `${BASEURL}${lat},${long}` 
+    return BASEURL
+    //return `${BASEURL}${lat},${long}` 
 }
