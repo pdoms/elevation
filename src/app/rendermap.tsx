@@ -1,6 +1,6 @@
-import {LatLng, LatLngTuple, LeafletMouseEvent} from "leaflet";
+import {LatLngTuple, LeafletMouseEvent} from "leaflet";
 import "leaflet/dist/leaflet.css";
-import {SetStateAction, useEffect, useRef, useState, FC} from "react";
+import {useEffect, useState, FC} from "react";
 import {MapContainer, Marker, TileLayer, useMapEvents, useMap} from "react-leaflet"
 import {CoordinatesFactory, _to_array} from "./helper";
 import {Icon} from "leaflet";
@@ -42,6 +42,11 @@ export const RenderMap: FC<IRenderMap> = ({coords, getElevation, getError, getCo
         let c = CoordinatesFactory(latitude, longitude)
         setCurrentPosition(c.toArray())
         getCoords(c)
+        makeFetch(c.lat, c.long).then((r: number | null) => {
+            getElevation(r)
+        }).catch((err) => {
+            getError(err)
+        })
 
     }
 
@@ -71,11 +76,7 @@ export const RenderMap: FC<IRenderMap> = ({coords, getElevation, getError, getCo
                 //Error handling is soft, no errors are really thrown but are
                 //rather lifted to the highest possible component, to inform the user
                 makeFetch(latlng[0], latlng[1]).then((r: number | null) => {
-                    if (r === null) {
-                        getError("Unable to fetch data")
-                    } else {
-                        getElevation(r)
-                    }
+                    getElevation(r)
                 }).catch((err) => {
                     getError(err)
                 })
