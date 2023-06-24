@@ -1,8 +1,8 @@
 
 //since opentopodata.org provides differnt datasets, the dataset could either
 //be user defined or configurable, if further features should be considered
-//const BASEURL = "https://api.opentopodata.org/v1/aster30m?locations="
-const BASEURL = "http://localhost:5000" 
+const BASEURL = "http://localhost:5000/api?location="
+//const BASEURL = "http://localhost:5000" 
 
 /**
  * Function that calls the opentopodata dataset with the location params and returns
@@ -22,9 +22,11 @@ export async function makeFetch(lat: number, long: number): Promise<number | nul
     let data;
     let code = response.status
     if (response.ok) {
+        
         //parsing json can always fail!!!
         try {
             data = await response.json();
+            console.log(data)
         } catch {
             console.error("Failed to fetch elevation data unable to parse response")
             return null
@@ -43,6 +45,6 @@ export async function makeFetch(lat: number, long: number): Promise<number | nul
  * @returns {string} constructred url for fetch
  * **/
 export function urlBuilder(lat: number, long: number): string {
-    return BASEURL
-    //return `${BASEURL}${lat},${long}` 
+    //return BASEURL
+    return `${BASEURL}${lat},${long}` 
 }
