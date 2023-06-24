@@ -1,6 +1,83 @@
-:root {}
-.leaflet-container {
-  height: 90vh;
-  width: 90%;
-  border-radius: 2rem;
+:root {
+
 }
+
+body {
+    font-size: 23px;
+}
+
+
+.heading {
+   font-weight: bold;
+   font-size: 38px;
+   margin-bottom: 1rem;
+   width: 100%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-direction: column;
+}
+
+.page_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.iocenter_wrapper {
+    width: 85vw;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.resources {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 14px;
+}
+
+.leaflet-container {
+    height: 65vh;
+    width: 85vw;
+    margin: 0.5rem 2rem;
+}
+
+/* IOCenter*/
+
+.io_form_wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: row;
+}
+
+.io_form {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    margin-right: 1em;
+}
+
+.io_out_key {
+    font-weight: bold;
+}
+
+label {
+    margin-bottom: 2px;
+}
+
+input[type=text] {
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+input[type=submit] {
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+
